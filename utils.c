@@ -4,6 +4,20 @@
 #include <stdlib.h>
 #include <time.h>
 
+void print_array(int *arr, int size) {
+  for (int i = 0; i < size; i++) printf("%d ", arr[i]);
+}
+
+void print_matrix(int **matrix, int size) {
+  for (int i = 0; i < size; i++) {
+    for (int j = 0; j < size; j++) {
+      printf("%d ", matrix[i][j]);
+    }
+
+    printf("\n");
+  }
+}
+
 void print_model_state(int **matrix, int size) {
   for (int i = 0; i < size; i++) {
     for (int j = 0; j < size; j++) {
@@ -35,7 +49,9 @@ int **init_ising_model(int size) {
   return matrix;
 }
 
-int **pad_matrix(int **matrix) {}
+int **pad_matrix(int **matrix, int size) {}
+
+int **unpad_matrix(int **matrix, int size) {}
 
 int calculate_moment(int **matrix, int i, int j) {
   int sign = matrix[i - 1][j] + matrix[i + 1][j] + matrix[i][j] +
@@ -50,5 +66,11 @@ int calculate_moment(int **matrix, int i, int j) {
 }
 
 void update_ising_model(int **in_matrix, int **out_matrix) {}
+
+void swap_arrays(int **A, int **B) {
+  int *temp = **A;
+  **A = **B;
+  **B = *temp;
+}
 
 void swap_matrices(int **A, int **B) {}
