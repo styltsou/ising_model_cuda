@@ -9,7 +9,7 @@ int **init_ising_model(int size);
 
 int **pad_matrix(int **matrix);
 
-int calculate_moment(int **matrix, int size, int i, int j);
+int calculate_moment(int **matrix, int i, int j);
 
 void update_ising_model(int **in_matrix, int **out_matrix);
 
