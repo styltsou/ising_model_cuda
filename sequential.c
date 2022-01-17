@@ -15,14 +15,9 @@ int main(int argc, char **argv) {
 
   // Create an initital matrix with a uniform distribution
   int **in_matrix = init_ising_model(model_size);
-
-  print_square_matrix(in_matrix, model_size);
-
-  // Add padding to avoid if statements
-  // int padded_in_matrix = pad_matrix(in_matrix);
+  print_model_state(in_matrix, model_size);
 
   // create a new matrix that will hold the output
-  // the size will be (model_size+2)x(model_size+2)
   // might need to dill it with zeros?
 
   // For loop calcs the energy and assigns result to output matrix. This shit
