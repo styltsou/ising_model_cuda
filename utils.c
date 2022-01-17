@@ -38,8 +38,15 @@ int **init_ising_model(int size) {
 int **pad_matrix(int **matrix) {}
 
 int calculate_moment(int **matrix, int i, int j) {
-  return matrix[i - 1][j] + matrix[i + 1][j] + matrix[i][j] + matrix[i][j - 1] +
-         matrix[i][j + 1];
+  int sign = matrix[i - 1][j] + matrix[i + 1][j] + matrix[i][j] +
+             matrix[i][j - 1] + matrix[i][j + 1];
+
+  if (sign > 0)
+    return 1;
+  else if (sign < 0)
+    return -1;
+
+  return matrix[i][j];
 }
 
 void update_ising_model(int **in_matrix, int **out_matrix) {}
