@@ -11,7 +11,7 @@ void print_array(int *arr, int size) {
 void print_matrix(int **matrix, int size) {
   for (int i = 0; i < size; i++) {
     for (int j = 0; j < size; j++) {
-      printf("%d ", matrix[i][j]);
+      printf("%2d ", matrix[i][j]);
     }
 
     printf("\n");
@@ -20,13 +20,7 @@ void print_matrix(int **matrix, int size) {
 
 void print_model_state(int **matrix, int size) {
   for (int i = 0; i < size; i++) {
-    for (int j = 0; j < size; j++) {
-      if (matrix[i][j] == 1)
-        printf(" 1 ");
-      else
-        printf("-1 ");
-    }
-
+    for (int j = 0; j < size; j++) printf("%2d ", matrix[i][j]);
     printf("\n");
   }
 }
@@ -49,9 +43,31 @@ int **init_ising_model(int size) {
   return matrix;
 }
 
-int **pad_matrix(int **matrix, int size) {}
+int **pad_matrix(int **matrix, int size) {
+  int **pad_mat = (int **)malloc((size + 2) * sizeof(int *));
 
-int **unpad_matrix(int **matrix, int size) {}
+  for (int i = 0; i < size + 2; i++) {
+    pad_mat[i] = (int *)calloc(size + 2, sizeof(int));
+  }
+
+  // Copy elements to pad_mat
+  for (int i = 0; i < size; i++)
+    for (int j = 0; j < size; j++) pad_mat[i + 1][j + 1] = matrix[i][j];
+
+  // Top padding
+  for (int i = 0; i < size; i++) pad_mat[0][i + 1] = matrix[size - 1][i];
+
+  // Right padding
+  for (int i = 0; i < size; i++) pad_mat[i + 1][size + 1] = matrix[i][0];
+
+  // Bottom padding
+  for (int i = 0; i < size; i++) pad_mat[size + 1][i + 1] = matrix[0][i];
+
+  // Left padding
+  for (int i = 0; i < size; i++) pad_mat[i + 1][0] = matrix[i][size - 1];
+
+  return pad_mat;
+}
 
 int calculate_moment(int **matrix, int i, int j) {
   int sign = matrix[i - 1][j] + matrix[i + 1][j] + matrix[i][j] +
@@ -65,12 +81,27 @@ int calculate_moment(int **matrix, int i, int j) {
   return matrix[i][j];
 }
 
-void update_ising_model(int **in_matrix, int **out_matrix) {}
+void update_ising_model(int **in_matrix, int **out_matrix, int size) {
+  // Add padding to input matrix
+  int **padded_in_matrix = pad_matrix(in_matrix, size);
 
-void swap_arrays(int **A, int **B) {
-  int *temp = **A;
-  **A = **B;
-  **B = *temp;
+  // The matrix is padded now (dont calc moments for currnet borders)
+  for (int i = 0; i < size; i++)
+    for (int j = 0; j < size; j++)
+      out_matrix[i][j] = calculate_moment(padded_in_matrix, i + 1, j + 1);
+
+  free(padded_in_matrix);
 }
 
-void swap_matrices(int **A, int **B) {}
+void swap_matrices(int ***A, int ***B) {
+  int **tmp = *A;
+  *A = *B;
+  *B = tmp;
+}
+
+int matrix_total_sum(int **matrix, int size) {
+  int count = 0;
+  for (int i = 0; i < size; i++)
+    for (int j = 0; j < size; j++) count += matrix[i][j];
+  return count;
+}
