@@ -30,7 +30,8 @@ int main(int argc, char **argv) {
     printf("Evolution : [%d/%d] | count : %d\n", k, num_iterations, count);
   }
 
-  // Print ising model state (out depends on iteration number)
+  // If number of iterations is odd then in_matrix contains the actual output
+  if (num_iterations % 2 == 0) swap_matrices(&in_matrix, &out_matrix);
 
   return 0;
 }
