@@ -8,16 +8,6 @@ void print_array(int *arr, int size) {
   for (int i = 0; i < size; i++) printf("%d ", arr[i]);
 }
 
-void print_matrix(int **matrix, int size) {
-  for (int i = 0; i < size; i++) {
-    for (int j = 0; j < size; j++) {
-      printf("%2d ", matrix[i][j]);
-    }
-
-    printf("\n");
-  }
-}
-
 void print_model_state(int **matrix, int size) {
   for (int i = 0; i < size; i++) {
     for (int j = 0; j < size; j++) printf("%2d ", matrix[i][j]);
@@ -97,6 +87,19 @@ void swap_matrices(int ***A, int ***B) {
   int **tmp = *A;
   *A = *B;
   *B = tmp;
+}
+
+void ising_model(int **in_matrix, int **out_matrix, int size,
+                 int num_iterations) {
+  int k = 0;
+
+  while (k < num_iterations) {
+    update_ising_model(in_matrix, out_matrix, size);
+    swap_matrices(&in_matrix, &out_matrix);
+    k++;
+  }
+
+  if (num_iterations % 2 == 0) swap_matrices(&in_matrix, &out_matrix);
 }
 
 int matrix_total_sum(int **matrix, int size) {
