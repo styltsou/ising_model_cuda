@@ -19,6 +19,4 @@ void swap_matrices(int **A, int **B);
 
 void ising_model(int *in_matrix, int *out_matrix, int size, int num_iterations);
 
-int matrix_total_sum(int *matrix, int size);
-
 #endif
