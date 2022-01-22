@@ -14,12 +14,10 @@ int main(int argc, char **argv) {
   int num_iterations = atoi(argv[2]);
 
   // Create an initital state matrix with a uniform distribution
-  int **in_matrix = init_ising_model(model_size);
+  int *in_matrix = init_ising_model(model_size);
 
-  // Allocate memory for output matrix
-  int **out_matrix = (int **)malloc(model_size * sizeof(int *));
-  for (int i = 0; i < model_size; i++)
-    out_matrix[i] = (int *)calloc(model_size, sizeof(int));
+  // // Allocate memory for output matrix
+  int *out_matrix = (int *)malloc(model_size * model_size * sizeof(int));
 
   ising_model(in_matrix, out_matrix, model_size, num_iterations);
 
