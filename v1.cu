@@ -32,10 +32,10 @@ void ising_model_parallel(int *in_matrix, int out_matrix, int size,
 
   // Calculate grid dimensions
   int BLOCK_SIZE = 32;  // So a block contains 1024 threads
-  dim3 block_dim(BLOCK_SIZE, BLOCK_SIZE);
+  dim3 block_dim(BLOCK_SIZE, BLOCK_SIZE, 1);
 
   int GRID_SIZE = ceil(size / BLOCK_SIZE);
-  dim grid_dim(GRID_SIZE, GRID_SIZE);
+  dim3 grid_dim(GRID_SIZE, GRID_SIZE, 1);
 
   // THIS WILL BE KIND OF TRICKY (MAYBE theres no need for swap)
   // Matrix pad may be needed before launcing the kernel
