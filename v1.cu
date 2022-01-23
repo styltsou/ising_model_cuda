@@ -23,13 +23,13 @@ __global__ void calc_moment(int *pad_in_matrix, int *pad_out_matrix, int size) {
   }
 }
 
-void ising_model_parallel(int *in_matrix, int out_matrix, int size,
+void ising_model_v1(int *in_matrix, int out_matrix, int model_size,
                           int num_iterations) {
   // TODO: change size of matrix calculation because we need to add padding to
   // the matrix first
 
   // First allocate memory for device copies
-  int matrix_bytes = size * size * sizeof(int);
+  int matrix_bytes = model_size * model_size * sizeof(int);
 
   int *in_matrix_d;
   int *out_matrix_d;
@@ -46,7 +46,7 @@ void ising_model_parallel(int *in_matrix, int out_matrix, int size,
   int BLOCK_SIZE = 32;  // So a block contains 1024 threads
   dim3 block_dim(BLOCK_SIZE, BLOCK_SIZE, 1);
 
-  int GRID_SIZE = ceil(size / BLOCK_SIZE);
+  int GRID_SIZE = ceil(model_size / BLOCK_SIZE);
   dim3 grid_dim(GRID_SIZE, GRID_SIZE, 1);
 
   // THIS WILL BE KIND OF TRICKY (MAYBE theres no need for swap)
