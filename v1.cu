@@ -3,19 +3,31 @@
 #include <stdlib.h>
 
 #include "utils.h"
+#include "v1.h"
 
-// Define the kernel to
-__global__ void calc_moment(int *in_matrix, int *out_matrix, int size) {
+// TODO: Might be a good idea to implement a kernel for matrix padding (toroidal
+// boundaries)
+
+// Define the kernel to calculate a moment given a matrix with toroidal
+// boundaries (boundaries are implemented by adding padding to the actual
+// matrix)
+__global__ void calc_moment(int *pad_in_matrix, int *pad_out_matrix, int size) {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
   int j = blockIdx.y * blockDim.y + threadIdx.y;
 
-  if (i < size && j < size) {
+  // Computation must not be performed on the border elements
+  if (i < size - 1 && j < size - 1) {
     // calcualte moment and update out matrix
+    pad_out_matrix[(i + 1) * size + (j + 1)] =
+        calculate_moment(pad_in_matrix, i + 1, j + 1);
   }
 }
 
 void ising_model_parallel(int *in_matrix, int out_matrix, int size,
                           int num_iterations) {
+  // TODO: change size of matrix calculation because we need to add padding to
+  // the matrix first
+
   // First allocate memory for device copies
   int matrix_bytes = size * size * sizeof(int);
 

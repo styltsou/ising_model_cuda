@@ -66,8 +66,6 @@ int calculate_moment(int *matrix, int size, int i, int j) {
     return 1;
   else if (sign < 0)
     return -1;
-
-  return matrix[i * size + j];
 }
 
 void update_ising_model(int *in_matrix, int *out_matrix, int size) {

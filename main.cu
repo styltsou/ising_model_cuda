@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "utils.h"
+#include "v1.h"
 
 int main(int argc, char **argv) {
   // Get model size n and number of iterations  from argv
