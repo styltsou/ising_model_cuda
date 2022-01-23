@@ -17,13 +17,16 @@ int main(int argc, char **argv) {
   // Create an initital state matrix with a uniform distribution
   int *in_matrix = init_ising_model(model_size);
 
-  // // Allocate memory for output matrix
-  int *out_matrix = (int *)malloc(model_size * model_size * sizeof(int));
+  int *out_matrix;
 
   ising_model(in_matrix, out_matrix, model_size, num_iterations);
 
   printf("Model state after %d iterations\n", num_iterations);
   print_model_state(out_matrix, model_size);
+
+  // Clean up
+  free(in_matrix);
+  free(out_matrix);
 
   return 0;
 }

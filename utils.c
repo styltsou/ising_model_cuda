@@ -69,6 +69,9 @@ int calculate_moment(int *matrix, int size, int i, int j) {
 }
 
 void update_ising_model(int *in_matrix, int *out_matrix, int size) {
+  // allocate memory for out matrix
+  out_matrix = (int *)calloc(size * size, sizeof(int));
+  
   // Add padding to input matrix
   int *padded_in_matrix = pad_matrix(in_matrix, size);
 
