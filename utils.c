@@ -14,8 +14,7 @@ void print_model_state(int *matrix, int size) {
 int uniform_random_spin() {
   int random = (rand() % 10) + 1;
 
-  if (random <= 5) return -1;
-  return 1;
+  return random <= 5 ? -1 : 1;
 }
 
 int *init_ising_model(int size) {
@@ -53,17 +52,14 @@ int calculate_moment(int *matrix, int size, int i, int j) {
              matrix[i * size + j] + matrix[i * size + (j - 1)] +
              matrix[i * size + (j + 1)];
 
-  if (sign > 0)
-    return 1;
-  else if (sign < 0)
-    return -1;
+  return sign > 0 ? 1 : -1
 }
 
 void update_ising_model(int *in_matrix, int *out_matrix, int size) {
   // Add padding to input matrix
   int *padded_in_matrix = pad_matrix(in_matrix, size);
 
-  // The matrix is padded now (dont calc moments for currnet borders)
+  // The matrix is padded now (dont calc moments for boundaries)
   for (int i = 0; i < size; i++)
     for (int j = 0; j < size; j++)
       out_matrix[i * size + j] =
@@ -92,4 +88,11 @@ void ising_model(int *in_matrix, int *out_matrix, int size,
   }
 
   if (num_iterations % 2 == 0) swap_matrices(&in_matrix, &out_matrix);
+}
+
+int compare_matrices(int *A, in *B, int size) {
+  for (int i = 0; i < size * size; i++)
+    if (A[i] != B[i]) return 0;
+
+  return 1;
 }
