@@ -30,25 +30,20 @@ int *init_ising_model(int size) {
 int *pad_matrix(int *matrix, int size) {
   int *pad_mat = (int *)calloc((size + 2) * (size + 2), sizeof(int));
 
-  // Copy elements to pad_mat
-  for (int i = 0; i < size; i++)
+  for (int i = 0; i < size; i++) {
+    // Copy elements to pad_mat
     for (int j = 0; j < size; j++)
       pad_mat[(i + 1) * (size + 2) + (j + 1)] = matrix[i * size + j];
 
-  // Top padding
-  for (int i = 0; i < size; i++) pad_mat[i + 1] = matrix[(size - 1) * size + i];
-
-  // Right padding
-  for (int i = 0; i < size; i++)
+    // Add top padding
+    pad_mat[i + 1] = matrix[(size - 1) * size + i];
+    // Add right padding
     pad_mat[(i + 1) * (size + 2) + size + 1] = matrix[i * size];
-
-  // Bottom padding
-  for (int i = 0; i < size; i++)
+    // Add bottom padding
     pad_mat[(size + 1) * (size + 2) + (i + 1)] = matrix[i];
-
-  // Left padding
-  for (int i = 0; i < size; i++)
+    // Add left padding
     pad_mat[(i + 1) * (size + 2)] = matrix[i * size + (size - 1)];
+  }
 
   return pad_mat;
 }
@@ -85,7 +80,6 @@ void swap_matrices(int **A, int **B) {
 
 void ising_model(int *in_matrix, int *out_matrix, int size,
                  int num_iterations) {
-
   // Allocate memory for out matrix
   out_matrix = (int *)calloc(size * size, sizeof(int));
 
