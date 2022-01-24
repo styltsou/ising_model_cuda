@@ -1,8 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-void print_array(int *arr, int size);
-
 void print_model_state(int *matrix, int size);
 
 int uniform_random_spin();

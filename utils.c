@@ -4,10 +4,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-void print_array(int *arr, int size) {
-  for (int i = 0; i < size; i++) printf("%d ", arr[i]);
-}
-
 void print_model_state(int *matrix, int size) {
   for (int i = 0; i < size; i++) {
     for (int j = 0; j < size; j++) printf("%2d ", matrix[i * size + j]);
@@ -69,9 +65,6 @@ int calculate_moment(int *matrix, int size, int i, int j) {
 }
 
 void update_ising_model(int *in_matrix, int *out_matrix, int size) {
-  // allocate memory for out matrix
-  out_matrix = (int *)calloc(size * size, sizeof(int));
-  
   // Add padding to input matrix
   int *padded_in_matrix = pad_matrix(in_matrix, size);
 
@@ -92,6 +85,10 @@ void swap_matrices(int **A, int **B) {
 
 void ising_model(int *in_matrix, int *out_matrix, int size,
                  int num_iterations) {
+
+  // Allocate memory for out matrix
+  out_matrix = (int *)calloc(size * size, sizeof(int));
+
   int k = 0;
 
   while (k < num_iterations) {
@@ -101,11 +98,4 @@ void ising_model(int *in_matrix, int *out_matrix, int size,
   }
 
   if (num_iterations % 2 == 0) swap_matrices(&in_matrix, &out_matrix);
-}
-
-int matrix_total_sum(int *matrix, int size) {
-  int count = 0;
-  for (int i = 0; i < size; i++)
-    for (int j = 0; j < size; j++) count += matrix[i * size + j];
-  return count;
 }
