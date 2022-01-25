@@ -7,7 +7,7 @@ int uniform_random_spin();
 
 int *init_ising_model(int size);
 
-int *pad_matrix(int *matrix, int size);
+int *add_halo(int *matrix, int size);
 
 int calculate_moment(int *matrix, int size, int i, int j);
 

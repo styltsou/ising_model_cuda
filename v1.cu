@@ -5,7 +5,7 @@
 #include "v1.h"
 
 // Kernel to add padding in a given matrix (for handling boundaries conditions)
-__global__ void pad_matrix(int *matrix, int size, int *pad_matrix) {
+__global__ void add_halo(int *matrix, int size, int *pad_matrix) {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
   int j = blockIdx.y * blockDim.y + threadIdx.y;
 
@@ -64,16 +64,15 @@ void ising_model_v1(int *in_matrix, int *out_matrix, int model_size,
 
   // Calculate grid dimensions
   int BLOCK_SIZE = 32;  // So a block contains 1024 threads
-  dim3 block_dim(BLOCK_SIZE, BLOCK_SIZE, 1);
+  dim3 block_dim(BLOCK_SIZE, BLOCK_SIZE);
 
   int GRID_SIZE = (model_size + BLOCK_SIZE - 1) / BLOCK_SIZE;
-  dim3 grid_dim(GRID_SIZE, GRID_SIZE, 1);
+  dim3 grid_dim(GRID_SIZE, GRID_SIZE);
 
   int k = 0;
   while (k < num_iterations) {
     // 1. Launch kernel to pad the matrix
-    pad_matrix<<<grid_dim, block_dim>>>(in_matrix_d, model_size,
-                                        pad_in_matrix_d);
+    add_halo<<<grid_dim, block_dim>>>(in_matrix_d, model_size, pad_in_matrix_d);
     // 2. Now that we have the padded matrix, launch kernel to calc moments
     calc_moments<<<grid_dim, block_dim>>>(pad_in_matrix_d, out_matrix_d,
                                           model_size);

@@ -26,7 +26,7 @@ int *init_ising_model(int size) {
   return matrix;
 }
 
-int *pad_matrix(int *matrix, int size) {
+int *add_halo(int *matrix, int size) {
   int *pad_mat = (int *)calloc((size + 2) * (size + 2), sizeof(int));
 
   for (int i = 0; i < size; i++) {
@@ -57,7 +57,7 @@ int calculate_moment(int *matrix, int size, int i, int j) {
 
 void update_ising_model(int *in_matrix, int *out_matrix, int size) {
   // Add padding to input matrix
-  int *padded_in_matrix = pad_matrix(in_matrix, size);
+  int *padded_in_matrix = add_halo(in_matrix, size);
 
   // The matrix is padded now (dont calc moments for boundaries)
   for (int i = 0; i < size; i++)
