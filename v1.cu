@@ -1,4 +1,3 @@
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -67,7 +66,7 @@ void ising_model_v1(int *in_matrix, int *out_matrix, int model_size,
   int BLOCK_SIZE = 32;  // So a block contains 1024 threads
   dim3 block_dim(BLOCK_SIZE, BLOCK_SIZE, 1);
 
-  int GRID_SIZE = ceil(model_size / BLOCK_SIZE);
+  int GRID_SIZE = (model_size + BLOCK_SIZE - 1) / BLOCK_SIZE;
   dim3 grid_dim(GRID_SIZE, GRID_SIZE, 1);
 
   int k = 0;
