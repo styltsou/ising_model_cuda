@@ -28,8 +28,8 @@ __global__ void add_halo(int *matrix, int size, int *pad_matrix) {
     }
   }
 }
-
-// Define the kernel to calculate a moment per thread
+  
+  // Define the kernel to calculate a moment per thread
 __global__ void calc_moments(int *pad_in_matrix, int *out_matrix,
                              int model_size) {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -45,8 +45,6 @@ __global__ void calc_moments(int *pad_in_matrix, int *out_matrix,
 
 void ising_model_v1(int *in_matrix, int *out_matrix, int model_size,
                     int num_iterations) {
-  int *out_matrix = (int *)malloc(model_size * model_size, sizeof(int));
-
   // Allocate memory for device copies
   int matrix_bytes = model_size * model_size * sizeof(int);
   int pad_matrix_bytes = (model_size + 1) * (model_size + 1) * sizeof(int);
@@ -78,7 +76,6 @@ void ising_model_v1(int *in_matrix, int *out_matrix, int model_size,
                                           model_size);
     // 3. Swap in and out matrices (device copies)
     swap_matrices(&in_matrix_d, &out_matrix_d);
-
     k++;
   }
 

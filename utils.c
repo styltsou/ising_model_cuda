@@ -52,7 +52,7 @@ int calculate_moment(int *matrix, int size, int i, int j) {
              matrix[i * size + j] + matrix[i * size + (j - 1)] +
              matrix[i * size + (j + 1)];
 
-  return sign > 0 ? 1 : -1
+  return sign > 0 ? 1 : -1;
 }
 
 void update_ising_model(int *in_matrix, int *out_matrix, int size) {
@@ -76,9 +76,6 @@ void swap_matrices(int **A, int **B) {
 
 void ising_model(int *in_matrix, int *out_matrix, int size,
                  int num_iterations) {
-  // Allocate memory for out matrix
-  out_matrix = (int *)calloc(size * size, sizeof(int));
-
   int k = 0;
 
   while (k < num_iterations) {
@@ -90,7 +87,7 @@ void ising_model(int *in_matrix, int *out_matrix, int size,
   if (num_iterations % 2 == 0) swap_matrices(&in_matrix, &out_matrix);
 }
 
-int compare_matrices(int *A, in *B, int size) {
+int compare_matrices(int *A, int *B, int size) {
   for (int i = 0; i < size * size; i++)
     if (A[i] != B[i]) return 0;
 
