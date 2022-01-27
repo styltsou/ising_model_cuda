@@ -22,13 +22,13 @@ __global__ void add_halo(int *matrix, int size, int *pad_matrix) {
       // Right padding
       pad_matrix[(i + 1) * (size + 2) + (i + 1)] = matrix[i * size];
       // Bottom padding
-      pad_mat[(size + 1) * (size + 2) + (i + 1)] = matrix[i];
+      pad_matrix[(size + 1) * (size + 2) + (i + 1)] = matrix[i];
       // Left padding
-      pad_mat[(i + 1) * (size + 2)] = matrix[i * size + (size - 1)];
+      pad_matrix[(i + 1) * (size + 2)] = matrix[i * size + (size - 1)];
     }
   }
 }
-  
+
   // Define the kernel to calculate a moment per thread
 __global__ void calc_moments(int *pad_in_matrix, int *out_matrix,
                              int model_size) {
@@ -38,8 +38,8 @@ __global__ void calc_moments(int *pad_in_matrix, int *out_matrix,
   // Computation must not be performed on the border elements
   if (i < model_size && j < model_size) {
     // calcualte moment and update out matrix
-    out_matrix[(i * model_size + j] =
-        calculate_moment(pad_in_matrix, model_size + 2, i + 1, j + 1);
+    //out_matrix[i * model_size + j] =
+        //calculate_moment(pad_in_matrix, model_size + 2, i + 1, j + 1);
   }
 }
 

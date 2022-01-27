@@ -23,8 +23,8 @@ int main(int argc, char **argv) {
   ising_model(in_matrix, out_matrix_v0, model_size, num_iterations);
   ising_model_v1(in_matrix, out_matrix_v1, model_size, num_iterations);
 
-  printf("Model state after %d iterations\n", num_iterations);
-  print_model_state(out_matrix_v0, model_size);
+  //printf("Model state after %d iterations\n", num_iterations);
+  //print_model_state(out_matrix_v0, model_size);
 
   if (compare_matrices(out_matrix_v0, out_matrix_v1, model_size)) {
     printf("\nV1 is correct\n");
