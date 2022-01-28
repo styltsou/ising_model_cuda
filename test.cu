@@ -6,8 +6,8 @@
 
 // Kernel to add padding in a given matrix (for handling boundaries conditions)
 __global__ void add_halo(int *matrix, int size, int *pad_matrix) {
-  int i = blockIdx.x * blockDim.x + threadIdx.x;
-  int j = blockIdx.y * blockDim.y + threadIdx.y;
+  int i = blockIdx.y * blockDim.y + threadIdx.y;
+  int j = blockIdx.x * blockDim.x + threadIdx.x;
   
   if (i < size && j < size) {
     // Copy elements from matrix to padded matrix
@@ -73,6 +73,10 @@ int main(int argc, char **argv) {
 
   printf("Padded matrix via kernel launch\n");
   print_model_state(pad_in_matrix, model_size + 2);
+
+  cudaFree(in_matrix_d);
+  cudaFree(pad_in_matrix_d);
+  cudaFree(out_matrix_d);
 
   return 0;
 }

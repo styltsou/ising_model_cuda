@@ -6,8 +6,8 @@
 
 // Kernel to add padding in a given matrix (for handling boundaries conditions)
 __global__ void add_halo(int *matrix, int size, int *pad_matrix) {
-  int i = blockIdx.x * blockDim.x + threadIdx.x;
-  int j = blockIdx.y * blockDim.y + threadIdx.y;
+  int i = blockIdx.y * blockDim.y + threadIdx.y;
+  int j = blockIdx.x * blockDim.x + threadIdx.x;
 
   if (i < size && j < size) {
     // Copy elements from matrix to padded matrix
@@ -32,8 +32,8 @@ __global__ void add_halo(int *matrix, int size, int *pad_matrix) {
   // Define the kernel to calculate a moment per thread
 __global__ void calc_moments(int *pad_in_matrix, int *out_matrix,
                              int model_size) {
-  int i = blockIdx.x * blockDim.x + threadIdx.x;
-  int j = blockIdx.y * blockDim.y + threadIdx.y;
+  int i = blockIdx.y * blockDim.y + threadIdx.y;
+  int j = blockIdx.x * blockDim.x + threadIdx.x;
 
   // Computation must not be performed on the border elements
   if (i < model_size && j < model_size) {
