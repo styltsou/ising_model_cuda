@@ -47,7 +47,7 @@ void ising_model_v1(int *in_matrix, int *out_matrix, int model_size,
                     int num_iterations) {
   // Allocate memory for device copies
   int matrix_bytes = model_size * model_size * sizeof(int);
-  int pad_matrix_bytes = (model_size + 1) * (model_size + 1) * sizeof(int);
+  int pad_matrix_bytes = (model_size + 2) * (model_size + 2) * sizeof(int);
 
   int *in_matrix_d;
   int *pad_in_matrix_d;

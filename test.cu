@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 
   int model_size = atoi(argv[1]);
 
-  int *in_matrixi = initialize_model(model_size);
+  int *in_matrix = init_ising_model(model_size);
   int *out_matrix = (int *)malloc(model_size * model_size * sizeof(int));
 
   printf("Initial matrix\n");
@@ -43,13 +43,13 @@ int main(int argc, char **argv) {
   int *out_matrix_d;
 
   int matrix_bytes = model_size * model_size * sizeof(int);
-  int pad_matrix_bytes = (model_size + 1) * (model_size + 1) * sizeof(int);
+  int pad_matrix_bytes = (model_size + 2) * (model_size + 2) * sizeof(int);
 
   int *pad_in_matrix = (int *)malloc(pad_matrix_bytes);
   int *pad_in_matrix_host = add_halo(in_matrix, model_size);
 
   printf("Matrix with halo from host\n");
-  print_model_state(pad_in_matrix, model_size + 2);
+  print_model_state(pad_in_matrix_host, model_size + 2);
 
   // Allocate memory for device
   cudaMalloc((void **)&in_matrix_d, matrix_bytes);
