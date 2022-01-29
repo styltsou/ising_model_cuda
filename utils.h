@@ -15,7 +15,7 @@ void update_ising_model(int *in_matrix, int *out_matrix, int size);
 
 void swap_matrices(int **A, int **B);
 
-void ising_model(int *in_matrix, int *out_matrix, int size, int num_iterations);
+int *ising_model(int *in_matrix, int size, int num_iterations);
 
 int compare_matrices(int *A, int *B, int size);
 

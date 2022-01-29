@@ -43,15 +43,20 @@ __global__ void calc_moments(int *pad_in_matrix, int *out_matrix,
   }
 }
 
-void ising_model_v1(int *in_matrix, int *out_matrix, int model_size,
+int *ising_model_v1(int *in_matrix, int model_size,
                     int num_iterations) {
-  // Allocate memory for device copies
-  int matrix_bytes = model_size * model_size * sizeof(int);
-  int pad_matrix_bytes = (model_size + 2) * (model_size + 2) * sizeof(int);
 
+  int matrix_bytes = model_size * model_size * sizeof(int);
+
+  // Allocate memory for output matrix
+  int *out_matrix = (int *)malloc(matrix_bytes);
+
+  // Allocate memory for device copies
   int *in_matrix_d;
   int *pad_in_matrix_d;
   int *out_matrix_d;
+
+  int pad_matrix_bytes = (model_size + 2) * (model_size + 2) * sizeof(int);
 
   cudaMalloc((void **)&in_matrix_d, matrix_bytes);
   cudaMalloc((void **)&pad_in_matrix_d, pad_matrix_bytes);
@@ -60,7 +65,7 @@ void ising_model_v1(int *in_matrix, int *out_matrix, int model_size,
   // Copy data to device
   cudaMemcpy(in_matrix_d, in_matrix, matrix_bytes, cudaMemcpyHostToDevice);
 
-  // Calculate grid dimensions
+  // Calculate grid and block  dimensions
   int BLOCK_SIZE = 32;  // So a block contains 1024 threads
   dim3 block_dim(BLOCK_SIZE, BLOCK_SIZE);
 
@@ -90,4 +95,6 @@ void ising_model_v1(int *in_matrix, int *out_matrix, int model_size,
   cudaFree(in_matrix_d);
   cudaFree(pad_in_matrix_d);
   cudaFree(out_matrix_d);
+
+  return out_matrix;
 }

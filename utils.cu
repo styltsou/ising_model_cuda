@@ -74,8 +74,7 @@ void swap_matrices(int **A, int **B) {
   *B = tmp;
 }
 
-void ising_model(int *in_matrix, int *out_matrix, int size,
-                 int num_iterations) {
+int *ising_model(int *in_matrix, int size, int num_iterations) {
   int k = 0;
 
   while (k < num_iterations) {
@@ -85,6 +84,8 @@ void ising_model(int *in_matrix, int *out_matrix, int size,
   }
 
   if (num_iterations % 2 == 0) swap_matrices(&in_matrix, &out_matrix);
+
+  return out_matrix;
 }
 
 int compare_matrices(int *A, int *B, int size) {
