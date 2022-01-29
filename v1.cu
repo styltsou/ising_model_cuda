@@ -74,7 +74,7 @@ int *ising_model_v1(int *in_matrix, int size,
   while (k < num_iterations) {
     // 1. Launch kernel to pad the matrix
     add_halo_kernel<<<grid_dim, block_dim>>>(in_matrix_d, size, pad_in_matrix_d);
-    // 2. Now that we have the padded matrix, launch kernel to calc moments
+    // 2. Launch kernel to calc moments
     update_model_v1<<<grid_dim, block_dim>>>(pad_in_matrix_d, out_matrix_d,
                                           size);
     // 3. Swap in and out matrices (device copies)

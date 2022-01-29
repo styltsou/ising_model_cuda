@@ -6,23 +6,10 @@
 
 __global__ void update_model_v2(int *pad_in_matrix, int *out_matrix,
                             int size) {
-  int row_idx = blockIdx.y * blockDim.y + threadIdx.y;
-  int col_idx = blockIdx.x * blockDim.x + threadIdx.x;
-
-  int row_stride = blockDim.y * gridDim.y;
-  int col_stride = blockDim.x * gridDim.x;
-
-  // grid-stride loop should so a thread calcs bxb momements
-  for (int i = row_idx; i < size; i += row_stride) {
-    for (int j = col_idx; j < size; j += col_stride) {
-      out_matrix[(i * size + j] =
-        calculate_moment(pad_in_matrix, size + 2, i + 1, j + 1);
-    }
-  }
 }
 
 // Here we implement the model where 1 threads calculates multiple moments
-void ising_model_v2(int *in_matrix, int *out_matrix, int size, int bsize,
+int *ising_model_v2(int *in_matrix, int size, int tile_width,
                     int num_iterations) {
   int *out_matrix = (int *)malloc(size * size, sizeof(int));
 
@@ -41,13 +28,26 @@ void ising_model_v2(int *in_matrix, int *out_matrix, int size, int bsize,
   // Copy data to device
   cudaMemcpy(in_matrix_d, in_matrix, matrix_bytes, cudaMemcpyHostToDevice);
 
-  // Max number of moments that each threat will compute
-  int moments_per_thread = bsize * bsize;
+  // Calculate block and grid dimensions
+  // Find way to calc depending on the tile_width and matrix size
+  dim3 block_dim(1, 1);
+  dim3 grid_dim(1, 1);
 
-  // Find mim number of threads so every thread computes bsize x bsize moments
+  int k = 0;
+  while (k < num_iterations) {
+    // Add halo to matrix
+      // (Dont know how to launch the previous kernel now)
+    update_model_v2<<<grid_dim, block_dim>>>(pad_in_matrix_d, out_matrix_d, size);
 
-  int BLOCK_SIZE =
-      (size + bsize - 1) / bsize;  // ceil(model_size / bsize)
+    swap_matrices(&in_matrix_d, &out_matrix_d);
+    k++;
+  }
 
-  dim3 = block_dim(BLOCK_SIZE, BLOCK_SIZE);
+  cudaMemcpy(out_matrix, in_matrix_d, matrix_bytes, cudaMemcpyDeviceToHost);
+
+  cudaFree(in_matrix_d);
+  cudaFree(pad_in_matrix_d);
+  cudaFree(out_matrix_d);
+
+  return out_matrix;
 }
