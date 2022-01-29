@@ -84,12 +84,8 @@ int *ising_model_v1(int *in_matrix, int model_size,
     k++;
   }
 
-  // if number of iteration is even, then in_matrix_d contains the actual output
-  if (num_iterations % 2 == 0) {
-    cudaMemcpy(out_matrix, in_matrix_d, matrix_bytes, cudaMemcpyDeviceToHost);
-  } else {
-    cudaMemcpy(out_matrix, out_matrix_d, matrix_bytes, cudaMemcpyDeviceToHost);
-  }
+  // After the swap, the in_matrix_d contains the actual output
+  cudaMemcpy(out_matrix, in_matrix_d, matrix_bytes, cudaMemcpyDeviceToHost);
 
   // Device cleanup
   cudaFree(in_matrix_d);

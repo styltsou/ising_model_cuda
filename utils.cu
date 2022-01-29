@@ -83,9 +83,8 @@ int *ising_model(int *in_matrix, int size, int num_iterations) {
     k++;
   }
 
-  if (num_iterations % 2 == 0) swap_matrices(&in_matrix, &out_matrix);
-
-  return out_matrix;
+  // After every swap, in_matrix contains the actual ouput
+  return in_matrix;
 }
 
 int compare_matrices(int *A, int *B, int size) {
