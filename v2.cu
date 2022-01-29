@@ -4,9 +4,18 @@
 #include "v2.h"
 #include "utils.h"
 
-__global__ void update_model_v2(int *pad_in_matrix, int *out_matrix,
-                            int size) {
+__global__ void update_model_v2(int *pad_in_matrix, int *out_matrix, int size, int tile_width) {
+  int row_start = (blockIdx.y * blockDim.y + threadIdx.y) * tile_width;
+  int row_end = row_start + tile_width;
+  int col_start = (blockIdx.x * blockDim.x + threadIdx.x) * tile_width;
+  int col_end = col_start + tile_width;
+  if (row_end < size && col_end < size) {
+    for (int i = row_start; i < row_end; i++)
+      for (int j = col_start; j < col_end; j++)
+        out_matrix[i * size + j] = calculate_moment(pad_in_matrix, size + 2, i + 1, j + 1);
+  }
 }
+
 
 // Here we implement the model where 1 threads calculates multiple moments
 int *ising_model_v2(int *in_matrix, int size, int tile_width,
