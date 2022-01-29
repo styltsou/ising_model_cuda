@@ -26,7 +26,7 @@ int *init_ising_model(int size) {
   return matrix;
 }
 
-int *add_halo(int *matrix, int size) {
+int *add_halo_host(int *matrix, int size) {
   int *pad_mat = (int *)calloc((size + 2) * (size + 2), sizeof(int));
 
   for (int i = 0; i < size; i++) {
@@ -47,7 +47,7 @@ int *add_halo(int *matrix, int size) {
   return pad_mat;
 }
 
-int calculate_moment(int *matrix, int size, int i, int j) {
+__host__ __device__ int calculate_moment(int *matrix, int size, int i, int j) {
   int sign = matrix[(i - 1) * size + j] + matrix[(i + 1) * size + j] +
              matrix[i * size + j] + matrix[i * size + (j - 1)] +
              matrix[i * size + (j + 1)];
@@ -55,36 +55,10 @@ int calculate_moment(int *matrix, int size, int i, int j) {
   return sign > 0 ? 1 : -1;
 }
 
-void update_ising_model(int *in_matrix, int *out_matrix, int size) {
-  // Add padding to input matrix
-  int *padded_in_matrix = add_halo(in_matrix, size);
-
-  // The matrix is padded now (dont calc moments for boundaries)
-  for (int i = 0; i < size; i++)
-    for (int j = 0; j < size; j++)
-      out_matrix[i * size + j] =
-          calculate_moment(padded_in_matrix, size + 2, i + 1, j + 1);
-
-  free(padded_in_matrix);
-}
-
 void swap_matrices(int **A, int **B) {
   int *tmp = *A;
   *A = *B;
   *B = tmp;
-}
-
-int *ising_model(int *in_matrix, int size, int num_iterations) {
-  int k = 0;
-
-  while (k < num_iterations) {
-    update_ising_model(in_matrix, out_matrix, size);
-    swap_matrices(&in_matrix, &out_matrix);
-    k++;
-  }
-
-  // After every swap, in_matrix contains the actual ouput
-  return in_matrix;
 }
 
 int compare_matrices(int *A, int *B, int size) {

@@ -1,33 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// in and out matrices are padded to avoid control statements for boundaries
-__global__ void calc_moment(int *pad_in_matrix, int *out_matrix,
-                            int model_size) {
-  int row_idx = blockIdx.x * blockDim.x + threadIdx.x;
-  int col_idx = blockIdx.y * blockDim.y + threadIdx.y;
+#include "v2.h"
+#include "utils.h"
 
-  int stride_x = blockDim.x * gridDim.x;
-  int stride_y = blockDim.y * gridDim.y;
+__global__ void update_model_v2(int *pad_in_matrix, int *out_matrix,
+                            int size) {
+  int row_idx = blockIdx.y * blockDim.y + threadIdx.y;
+  int col_idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+  int row_stride = blockDim.y * gridDim.y;
+  int col_stride = blockDim.x * gridDim.x;
 
   // grid-stride loop should so a thread calcs bxb momements
-  for (int i = row_idx; i < model_size; i += stride_x) {
-    for (int j = col_idx; j < model_size; j += stride_y) {
-      // Calc moment here
-      out_matrix[(i * model_size + j] =
-        calculate_moment(pad_in_matrix, model_size + 2, i + 1, j + 1);
+  for (int i = row_idx; i < size; i += row_stride) {
+    for (int j = col_idx; j < size; j += col_stride) {
+      out_matrix[(i * size + j] =
+        calculate_moment(pad_in_matrix, size + 2, i + 1, j + 1);
     }
   }
 }
 
 // Here we implement the model where 1 threads calculates multiple moments
-void ising_model_v2(int *in_matrix, int *out_matrix, int model_size, int bsize,
+void ising_model_v2(int *in_matrix, int *out_matrix, int size, int bsize,
                     int num_iterations) {
-  int *out_matrix = (int *)malloc(model_size * model_size, sizeof(int));
+  int *out_matrix = (int *)malloc(size * size, sizeof(int));
 
   // Allocate memory for device copies
-  int matrix_bytes = model_size * model_size * sizeof(int);
-  int pad_matrix_bytes = (model_size + 1) * (model_size + 1) * sizeof(int);
+  int matrix_bytes = size * model_size * sizeof(int);
+  int pad_matrix_bytes = (size + 2) * (size + 2) * sizeof(int);
 
   int *in_matrix_d;
   int *pad_in_matrix_d;
@@ -46,7 +47,7 @@ void ising_model_v2(int *in_matrix, int *out_matrix, int model_size, int bsize,
   // Find mim number of threads so every thread computes bsize x bsize moments
 
   int BLOCK_SIZE =
-      (model_size + bsize - 1) / bsize;  // ceil(model_size / bsize)
+      (size + bsize - 1) / bsize;  // ceil(model_size / bsize)
 
   dim3 = block_dim(BLOCK_SIZE, BLOCK_SIZE);
 }

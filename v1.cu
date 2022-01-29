@@ -5,7 +5,7 @@
 #include "v1.h"
 
 // Kernel to add padding in a given matrix (for handling boundaries conditions)
-__global__ void add_halo(int *matrix, int size, int *pad_matrix) {
+__global__ void add_halo_kernel(int *matrix, int size, int *pad_matrix) {
   int i = blockIdx.y * blockDim.y + threadIdx.y;
   int j = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -13,8 +13,6 @@ __global__ void add_halo(int *matrix, int size, int *pad_matrix) {
     // Copy elements from matrix to padded matrix
     pad_matrix[(i + 1) * (size + 2) + (j + 1)] = matrix[i * size + j];
 
-    // TODO:L This may not be a best practice.It might be wise to assign more
-    // job to every thread.
     //  Prevent kernel for assigning the padding multiple times
     if (j == 0) {
       // Top padding
@@ -29,19 +27,8 @@ __global__ void add_halo(int *matrix, int size, int *pad_matrix) {
   }
 }
 
-// Device function to calculate the new moment of a lattice
-__device__ int calculate_moment_d(int *matrix, int size, int i, int j) {
-  int sign = matrix[(i - 1) * size + j] +
-    matrix[(i + 1) * size + j] +
-    matrix[i * size + j] +
-    matrix[i * size + (j - 1)] +
-    matrix[i * size + (j + 1)];
-
-  return sing > 0 ? 1 : -1;
-}
-
 // Define the kernel to calculate a moment per thread
-__global__ void update_model(int *pad_in_matrix, int *out_matrix,
+__global__ void update_model_v1(int *pad_in_matrix, int *out_matrix,
                              int size) {
   int i = blockIdx.y * blockDim.y + threadIdx.y;
   int j = blockIdx.x * blockDim.x + threadIdx.x;
@@ -86,9 +73,9 @@ int *ising_model_v1(int *in_matrix, int size,
   int k = 0;
   while (k < num_iterations) {
     // 1. Launch kernel to pad the matrix
-    add_halo<<<grid_dim, block_dim>>>(in_matrix_d, size, pad_in_matrix_d);
+    add_halo_kernel<<<grid_dim, block_dim>>>(in_matrix_d, size, pad_in_matrix_d);
     // 2. Now that we have the padded matrix, launch kernel to calc moments
-    update_model<<<grid_dim, block_dim>>>(pad_in_matrix_d, out_matrix_d,
+    update_model_v1<<<grid_dim, block_dim>>>(pad_in_matrix_d, out_matrix_d,
                                           size);
     // 3. Swap in and out matrices (device copies)
     swap_matrices(&in_matrix_d, &out_matrix_d);
