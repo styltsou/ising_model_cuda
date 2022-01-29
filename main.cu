@@ -30,11 +30,11 @@ int main(int argc, char **argv) {
     printf("\nV1 has bugs\n");
   }
 
-  if (compare_matrices(out_matrix_v0, out_matrix_v2, model_size)) {
-    printf("V2 is correct\n");
-  } else {
-    printf("V2 has bugs\n");
-  }
+  //if (compare_matrices(out_matrix_v0, out_matrix_v2, model_size)) {
+    //printf("V2 is correct\n");
+  //} else {
+    //printf("V2 has bugs\n");
+  //}
 
   // Clean up
   free(in_matrix_v0);
