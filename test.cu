@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
   int pad_matrix_bytes = (model_size + 2) * (model_size + 2) * sizeof(int);
 
   int *pad_in_matrix = (int *)malloc(pad_matrix_bytes);
-  int *pad_in_matrix_host = add_halo(in_matrix, model_size);
+  int *pad_in_matrix_host = add_halo_host(in_matrix, model_size);
 
   printf("Matrix with halo from host\n");
   print_model_state(pad_in_matrix_host, model_size + 2);
