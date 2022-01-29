@@ -5,7 +5,7 @@
 #include "v1.h"
 
 // Kernel to add padding in a given matrix (for handling boundaries conditions)
-__global__ void add_halo_kernel(int *matrix, int size, int *pad_matrix) {
+__global__ void add_halo_v1(int *matrix, int size, int *pad_matrix) {
   int i = blockIdx.y * blockDim.y + threadIdx.y;
   int j = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -33,16 +33,14 @@ __global__ void update_model_v1(int *pad_in_matrix, int *out_matrix,
   int i = blockIdx.y * blockDim.y + threadIdx.y;
   int j = blockIdx.x * blockDim.x + threadIdx.x;
 
-  // Computation must not be performed on the border elements
+  // Check for index out of bounds
   if (i < size && j < size) {
-    // calcualte moment and update out matrix
     out_matrix[i * size + j] =
         calculate_moment_d(pad_in_matrix, size + 2, i + 1, j + 1);
   }
 }
 
-int *ising_model_v1(int *in_matrix, int size,
-                    int num_iterations) {
+int *ising_model_v1(int *in_matrix, int size, int num_iterations) {
 
   int matrix_bytes = size * _size * sizeof(int);
 
@@ -64,7 +62,7 @@ int *ising_model_v1(int *in_matrix, int size,
   cudaMemcpy(in_matrix_d, in_matrix, matrix_bytes, cudaMemcpyHostToDevice);
 
   // Calculate grid and block  dimensions
-  int BLOCK_SIZE = 32;  // So a block contains 1024 threads
+  int BLOCK_SIZE = 32;
   dim3 block_dim(BLOCK_SIZE, BLOCK_SIZE);
 
   int GRID_SIZE = (size + BLOCK_SIZE - 1) / BLOCK_SIZE;
@@ -72,12 +70,10 @@ int *ising_model_v1(int *in_matrix, int size,
 
   int k = 0;
   while (k < num_iterations) {
-    // 1. Launch kernel to pad the matrix
-    add_halo_kernel<<<grid_dim, block_dim>>>(in_matrix_d, size, pad_in_matrix_d);
-    // 2. Launch kernel to calc moments
-    update_model_v1<<<grid_dim, block_dim>>>(pad_in_matrix_d, out_matrix_d,
-                                          size);
-    // 3. Swap in and out matrices (device copies)
+    add_halo_v1<<<grid_dim, block_dim>>>(in_matrix_d, size, pad_in_matrix_d);
+
+    update_model_v1<<<grid_dim, block_dim>>>(pad_in_matrix_d, out_matrix_d, size);
+
     swap_matrices(&in_matrix_d, &out_matrix_d);
     k++;
   }
