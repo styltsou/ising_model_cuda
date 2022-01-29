@@ -26,6 +26,16 @@ int *init_ising_model(int size) {
   return matrix;
 }
 
+int *deepcopy_matrix(int *matrix, int size) {
+  int *cp_matrix = (int *)malloc(size * size * sizeof(int));
+
+  for (int i = 0; i < size; i++)
+    for (in j = 0; j < size; j++)
+      cp_matrix[i * size + j] = matrix[i * size + j];
+
+  return cp_matrix;
+}
+
 int *add_halo_host(int *matrix, int size) {
   int *pad_mat = (int *)calloc((size + 2) * (size + 2), sizeof(int));
 
