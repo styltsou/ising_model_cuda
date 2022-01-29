@@ -29,24 +29,35 @@ __global__ void add_halo(int *matrix, int size, int *pad_matrix) {
   }
 }
 
-  // Define the kernel to calculate a moment per thread
-__global__ void calc_moments(int *pad_in_matrix, int *out_matrix,
-                             int model_size) {
+// Device function to calculate the new moment of a lattice
+__device__ int calculate_moment_d(int *matrix, int size, int i, int j) {
+  int sign = matrix[(i - 1) * size + j] +
+    matrix[(i + 1) * size + j] +
+    matrix[i * size + j] +
+    matrix[i * size + (j - 1)] +
+    matrix[i * size + (j + 1)];
+
+  return sing > 0 ? 1 : -1;
+}
+
+// Define the kernel to calculate a moment per thread
+__global__ void update_model(int *pad_in_matrix, int *out_matrix,
+                             int size) {
   int i = blockIdx.y * blockDim.y + threadIdx.y;
   int j = blockIdx.x * blockDim.x + threadIdx.x;
 
   // Computation must not be performed on the border elements
-  if (i < model_size && j < model_size) {
+  if (i < size && j < size) {
     // calcualte moment and update out matrix
-    //out_matrix[i * model_size + j] =
-        //calculate_moment(pad_in_matrix, model_size + 2, i + 1, j + 1);
+    out_matrix[i * size + j] =
+        calculate_moment_d(pad_in_matrix, size + 2, i + 1, j + 1);
   }
 }
 
-int *ising_model_v1(int *in_matrix, int model_size,
+int *ising_model_v1(int *in_matrix, int size,
                     int num_iterations) {
 
-  int matrix_bytes = model_size * model_size * sizeof(int);
+  int matrix_bytes = size * _size * sizeof(int);
 
   // Allocate memory for output matrix
   int *out_matrix = (int *)malloc(matrix_bytes);
@@ -56,7 +67,7 @@ int *ising_model_v1(int *in_matrix, int model_size,
   int *pad_in_matrix_d;
   int *out_matrix_d;
 
-  int pad_matrix_bytes = (model_size + 2) * (model_size + 2) * sizeof(int);
+  int pad_matrix_bytes = (size + 2) * (size + 2) * sizeof(int);
 
   cudaMalloc((void **)&in_matrix_d, matrix_bytes);
   cudaMalloc((void **)&pad_in_matrix_d, pad_matrix_bytes);
@@ -69,16 +80,16 @@ int *ising_model_v1(int *in_matrix, int model_size,
   int BLOCK_SIZE = 32;  // So a block contains 1024 threads
   dim3 block_dim(BLOCK_SIZE, BLOCK_SIZE);
 
-  int GRID_SIZE = (model_size + BLOCK_SIZE - 1) / BLOCK_SIZE;
+  int GRID_SIZE = (size + BLOCK_SIZE - 1) / BLOCK_SIZE;
   dim3 grid_dim(GRID_SIZE, GRID_SIZE);
 
   int k = 0;
   while (k < num_iterations) {
     // 1. Launch kernel to pad the matrix
-    add_halo<<<grid_dim, block_dim>>>(in_matrix_d, model_size, pad_in_matrix_d);
+    add_halo<<<grid_dim, block_dim>>>(in_matrix_d, size, pad_in_matrix_d);
     // 2. Now that we have the padded matrix, launch kernel to calc moments
-    calc_moments<<<grid_dim, block_dim>>>(pad_in_matrix_d, out_matrix_d,
-                                          model_size);
+    update_model<<<grid_dim, block_dim>>>(pad_in_matrix_d, out_matrix_d,
+                                          size);
     // 3. Swap in and out matrices (device copies)
     swap_matrices(&in_matrix_d, &out_matrix_d);
     k++;
