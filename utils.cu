@@ -1,8 +1,8 @@
-#include "utils.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
+#include "utils.h"
 
 void print_model_state(int *matrix, int size) {
   for (int i = 0; i < size; i++) {
@@ -30,7 +30,7 @@ int *deepcopy_matrix(int *matrix, int size) {
   int *cp_matrix = (int *)malloc(size * size * sizeof(int));
 
   for (int i = 0; i < size; i++)
-    for (in j = 0; j < size; j++)
+    for (int j = 0; j < size; j++)
       cp_matrix[i * size + j] = matrix[i * size + j];
 
   return cp_matrix;
@@ -57,7 +57,7 @@ int *add_halo_host(int *matrix, int size) {
   return pad_mat;
 }
 
-__host__ __device__ int calculate_moment(int *matrix, int size, int i, int j) {
+int calculate_moment(int *matrix, int size, int i, int j) {
   int sign = matrix[(i - 1) * size + j] + matrix[(i + 1) * size + j] +
              matrix[i * size + j] + matrix[i * size + (j - 1)] +
              matrix[i * size + (j + 1)];

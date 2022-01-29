@@ -4,6 +4,14 @@
 #include "utils.h"
 #include "v1.h"
 
+__device__ int calculate_moment_v1(int *matrix, int size, int i, int j) {
+  int sign = matrix[(i - 1) * size + j] + matrix[(i + 1) * size + j] +
+             matrix[i * size + j] + matrix[i * size + (j - 1)] +
+             matrix[i * size + (j + 1)];
+
+  return sign > 0 ? 1 : -1;
+}
+
 // Kernel to add padding in a given matrix (for handling boundaries conditions)
 __global__ void add_halo_v1(int *matrix, int size, int *pad_matrix) {
   int i = blockIdx.y * blockDim.y + threadIdx.y;
@@ -28,20 +36,18 @@ __global__ void add_halo_v1(int *matrix, int size, int *pad_matrix) {
 }
 
 // Define the kernel to calculate a moment per thread
-__global__ void update_model_v1(int *pad_in_matrix, int *out_matrix,
-                             int size) {
+__global__ void update_model_v1(int *pad_in_matrix, int *out_matrix, int size) {
   int i = blockIdx.y * blockDim.y + threadIdx.y;
   int j = blockIdx.x * blockDim.x + threadIdx.x;
 
   // Check for index out of bounds
   if (i < size && j < size) {
     out_matrix[i * size + j] =
-        calculate_moment_d(pad_in_matrix, size + 2, i + 1, j + 1);
+        calculate_moment_v1(pad_in_matrix, size + 2, i + 1, j + 1);
   }
 }
 
 int *ising_model_v1(int *in_matrix, int size, int num_iterations) {
-
   int matrix_bytes = size * _size * sizeof(int);
 
   // Allocate memory for output matrix
@@ -72,7 +78,8 @@ int *ising_model_v1(int *in_matrix, int size, int num_iterations) {
   while (k < num_iterations) {
     add_halo_v1<<<grid_dim, block_dim>>>(in_matrix_d, size, pad_in_matrix_d);
 
-    update_model_v1<<<grid_dim, block_dim>>>(pad_in_matrix_d, out_matrix_d, size);
+    update_model_v1<<<grid_dim, block_dim>>>(pad_in_matrix_d, out_matrix_d,
+                                             size);
 
     swap_matrices(&in_matrix_d, &out_matrix_d);
     k++;

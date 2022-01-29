@@ -1,23 +1,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "v2.h"
 #include "utils.h"
+#include "v2.h"
 
+__device__ int calculate_moment_v2(int *matrix, int size, int i, int j) {
+  int sign = matrix[(i - 1) * size + j] + matrix[(i + 1) * size + j] +
+             matrix[i * size + j] + matrix[i * size + (j - 1)] +
+             matrix[i * size + (j + 1)];
+
+  return sign > 0 ? 1 : -1;
+}
 // Guess that's not the optimal implementation
 // Might use v1 instead
-__global__ void add_halo_v2(int *matrix, int size, int tile_width, int *pad_matrix) {
+__global__ void add_halo_v2(int *matrix, int size, int tile_width,
+                            int *pad_matrix) {
   int row_start = blockIdx.y * tile_width;
   int row_end = row_start + tile_width;
   int col_start = blockIdx.x * tile_width;
-  int col_end = col_start + tile_width; 
+  int col_end = col_start + tile_width;
 
   for (int i = row_start; i < row_end; i++) {
     for (int j = col_start; j < col_end; j++) {
       if (i < size && j < size) {
-        // Copy elements from matrix to padded matrix  
+        // Copy elements from matrix to padded matrix
         pad_matrix[(i + 1) * (size + 2) + j + 1] = matrix[i * size + j];
-      
+
         if (j == 0) {
           // Top Padding
           pad_matrix[i + 1] = matrix[(size - 1) * size + i];
@@ -33,16 +41,18 @@ __global__ void add_halo_v2(int *matrix, int size, int tile_width, int *pad_matr
   }
 }
 
-__global__ void update_model_v2(int *pad_in_matrix, int *out_matrix, int size, int tile_width) {
+__global__ void update_model_v2(int *pad_in_matrix, int *out_matrix, int size,
+                                int tile_width) {
   int row_start = (blockIdx.y * blockDim.y + threadIdx.y) * tile_width;
   int row_end = row_start + tile_width;
   int col_start = (blockIdx.x * blockDim.x + threadIdx.x) * tile_width;
   int col_end = col_start + tile_width;
 
-    for (int i = row_start; i < row_end; i++)
-      for (int j = col_start; j < col_end; j++)
-        if (i < size && j < size)
-          out_matrix[i * size + j] = calculate_moment(pad_in_matrix, size + 2, i + 1, j + 1);
+  for (int i = row_start; i < row_end; i++)
+    for (int j = col_start; j < col_end; j++)
+      if (i < size && j < size)
+        out_matrix[i * size + j] =
+            calculate_moment_v2(pad_in_matrix, size + 2, i + 1, j + 1);
 }
 
 // A thread calculates a tile of moments
@@ -73,9 +83,11 @@ int *ising_model_v2(int *in_matrix, int size, int tile_width,
 
   int k = 0;
   while (k < num_iterations) {
-    add_halo_v2<<<grid_dim, block_dim>>>(in_matrix_d, size, tile_width, pad_in_matrix_d);
+    add_halo_v2<<<grid_dim, block_dim>>>(in_matrix_d, size, tile_width,
+                                         pad_in_matrix_d);
 
-    update_model_v2<<<grid_dim, block_dim>>>(pad_in_matrix_d, out_matrix_d, size, tile_width);
+    update_model_v2<<<grid_dim, block_dim>>>(pad_in_matrix_d, out_matrix_d,
+                                             size, tile_width);
 
     swap_matrices(&in_matrix_d, &out_matrix_d);
     k++;
