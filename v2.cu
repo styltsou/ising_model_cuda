@@ -9,15 +9,14 @@ __global__ void update_model_v2(int *pad_in_matrix, int *out_matrix, int size, i
   int row_end = row_start + tile_width;
   int col_start = (blockIdx.x * blockDim.x + threadIdx.x) * tile_width;
   int col_end = col_start + tile_width;
-  if (row_end < size && col_end < size) {
+
     for (int i = row_start; i < row_end; i++)
       for (int j = col_start; j < col_end; j++)
-        out_matrix[i * size + j] = calculate_moment(pad_in_matrix, size + 2, i + 1, j + 1);
-  }
+        if (i < size && j < size)
+          out_matrix[i * size + j] = calculate_moment(pad_in_matrix, size + 2, i + 1, j + 1);
 }
 
-
-// Here we implement the model where 1 threads calculates multiple moments
+// A thread calculates a tile of moments
 int *ising_model_v2(int *in_matrix, int size, int tile_width,
                     int num_iterations) {
   int *out_matrix = (int *)malloc(size * size, sizeof(int));
@@ -38,9 +37,10 @@ int *ising_model_v2(int *in_matrix, int size, int tile_width,
   cudaMemcpy(in_matrix_d, in_matrix, matrix_bytes, cudaMemcpyHostToDevice);
 
   // Calculate block and grid dimensions
-  // Find way to calc depending on the tile_width and matrix size
   dim3 block_dim(1, 1);
-  dim3 grid_dim(1, 1);
+
+  int GRID_SIZE = (size + tile_width - 1) / tile_width;
+  dim3 grid_dim(GRID_SIZE, GRID_SIZE);
 
   int k = 0;
   while (k < num_iterations) {
