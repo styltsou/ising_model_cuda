@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
 
   int *out_matrix_v0 = ising_model_v0(in_matrix_v0, model_size, num_iterations);
   int *out_matrix_v1 = ising_model_v1(in_matrix_v1, model_size, num_iterations);
-  int *out_matrix_v2 = ising_model_v2(in_matrix_v2, model_size, num_iterations);
+  int *out_matrix_v2 = ising_model_v2(in_matrix_v2, model_size, 4, num_iterations);
 
   if (compare_matrices(out_matrix_v0, out_matrix_v1, model_size)) {
     printf("\nV0 == V1\n");
