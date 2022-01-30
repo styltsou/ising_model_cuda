@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
   }
 
   if (compare_matrices(out_matrix_v1, out_matrix_v2, model_size)) {
-    printf("V1 == V2"\n);
+    printf("V1 == V2\n");
   } else {
     printf("V1 !== V2\n");
   }
