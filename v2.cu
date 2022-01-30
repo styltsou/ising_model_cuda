@@ -35,7 +35,7 @@ __global__ void add_halo_v2(int *matrix, int size, int tile_width,
           // Bottom padding
           pad_matrix[(size + 1) * (size + 2) + (i + 1)] = matrix[i];
           // Left padding
-          pad[(i + 1) * (size + 2)] = matrix[i * size + (size - 1)];
+          pad_matrix[(i + 1) * (size + 2)] = matrix[i * size + (size - 1)];
         }
       }
     }
@@ -59,16 +59,16 @@ __global__ void update_model_v2(int *pad_in_matrix, int *out_matrix, int size,
 // A thread calculates a tile of moments
 int *ising_model_v2(int *in_matrix, int size, int tile_width,
                     int num_iterations) {
-  int *out_matrix = (int *)malloc(size * size, sizeof(int));
+  int *out_matrix = (int *)malloc(size * size * sizeof(int));
 
   // Allocate memory for device copies
-  int matrix_bytes = size * model_size * sizeof(int);
+  int matrix_bytes = size * size * sizeof(int);
   int pad_matrix_bytes = (size + 2) * (size + 2) * sizeof(int);
 
   int *in_matrix_d;
   int *pad_in_matrix_d;
   int *out_matrix_d;
-
+  
   cudaMalloc((void **)&in_matrix_d, matrix_bytes);
   cudaMalloc((void **)&pad_in_matrix_d, pad_matrix_bytes);
   cudaMalloc((void **)&out_matrix_d, matrix_bytes);
