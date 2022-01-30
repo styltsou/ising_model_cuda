@@ -14,6 +14,34 @@ __device__ int calculate_moment_v2(int *matrix, int size, int i, int j) {
 
 // Guess that's not the optimal implementation
 // Might use v1 instead
+// __global__ void add_halo_v2(int *matrix, int size, int tile_width,
+//                             int *pad_matrix) {
+//   int row_start = blockIdx.y * tile_width;
+//   int row_end = row_start + tile_width;
+//   int col_start = blockIdx.x * tile_width;
+//   int col_end = col_start + tile_width;
+
+//   for (int i = row_start; i < row_end; i++) {
+//     for (int j = col_start; j < col_end; j++) {
+//       if (i < size && j < size) {
+//         // Copy elements from matrix to padded matrix
+//         pad_matrix[(i + 1) * (size + 2) + j + 1] = matrix[i * size + j];
+
+//         if (j == 0) {
+//           // Top Padding
+//           pad_matrix[i + 1] = matrix[(size - 1) * size + i];
+//           // Right padding
+//           pad_matrix[(i + 1) * (size + 2) + (i + 1)] = matrix[i * size];
+//           // Bottom padding
+//           pad_matrix[(size + 1) * (size + 2) + (i + 1)] = matrix[i];
+//           // Left padding
+//           pad_matrix[(i + 1) * (size + 2)] = matrix[i * size + (size - 1)];
+//         }
+//       }
+//     }
+//   }
+}
+
 __global__ void add_halo_v2(int *matrix, int size, int tile_width,
                             int *pad_matrix) {
   int row_start = blockIdx.y * tile_width;
@@ -25,18 +53,16 @@ __global__ void add_halo_v2(int *matrix, int size, int tile_width,
     for (int j = col_start; j < col_end; j++) {
       if (i < size && j < size) {
         // Copy elements from matrix to padded matrix
-        pad_matrix[(i + 1) * (size + 2) + j + 1] = matrix[i * size + j];
+        pad_matrix[(i + 1) * (size + 2) + (j + 1)] = matrix[i * size + j];
 
-        if (j == 0) {
-          // Top Padding
-          pad_matrix[i + 1] = matrix[(size - 1) * size + i];
-          // Right padding
-          pad_matrix[(i + 1) * (size + 2) + (i + 1)] = matrix[i * size];
-          // Bottom padding
-          pad_matrix[(size + 1) * (size + 2) + (i + 1)] = matrix[i];
-          // Left padding
-          pad_matrix[(i + 1) * (size + 2)] = matrix[i * size + (size - 1)];
-        }
+        if (i == 0)
+          pad_matrix[(size + 2) * (size + 1) + (j + 1)] = matrix[n * i + j];
+        if (i == size - 1)
+          pad_matrix[j + 1] = matrix[size * i + j];
+        if (j == 0)
+          pad_matrix[(size + 2) * (i + 1) + (size + 1)] = matrix[size * i + j];
+        if (j == size - 1)
+          pad_matrix[(size + 2) * (i + 1)] = matrix[size * i + j];
       }
     }
   }
@@ -68,7 +94,7 @@ int *ising_model_v2(int *in_matrix, int size, int tile_width,
   int *in_matrix_d;
   int *pad_in_matrix_d;
   int *out_matrix_d;
-  
+
   cudaMalloc((void **)&in_matrix_d, matrix_bytes);
   cudaMalloc((void **)&pad_in_matrix_d, pad_matrix_bytes);
   cudaMalloc((void **)&out_matrix_d, matrix_bytes);

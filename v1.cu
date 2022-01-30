@@ -13,6 +13,28 @@ __device__ int calculate_moment_v1(int *matrix, int size, int i, int j) {
 }
 
 // Kernel to add padding in a given matrix (for handling boundaries conditions)
+//__global__ void add_halo_v1(int *matrix, int size, int *pad_matrix) {
+//  int i = blockIdx.y * blockDim.y + threadIdx.y;
+// int j = blockIdx.x * blockDim.x + threadIdx.x;
+
+// if (i < size && j < size) {
+// Copy elements from matrix to padded matrix
+// pad_matrix[(i + 1) * (size + 2) + (j + 1)] = matrix[i * size + j];
+
+//  Prevent kernel for assigning the padding multiple times
+// if (j == 0) {
+// Top padding
+// pad_matrix[i + 1] = matrix[(size - 1) * size + i];
+// Right padding
+// pad_matrix[(i + 1) * (size + 2) + (i + 1)] = matrix[i * size];
+// Bottom padding
+// pad_matrix[(size + 1) * (size + 2) + (i + 1)] = matrix[i];
+// Left padding
+// pad_matrix[(i + 1) * (size + 2)] = matrix[i * size + (size - 1)];
+// }
+//}
+//}
+
 __global__ void add_halo_v1(int *matrix, int size, int *pad_matrix) {
   int i = blockIdx.y * blockDim.y + threadIdx.y;
   int j = blockIdx.x * blockDim.x + threadIdx.x;
@@ -21,17 +43,14 @@ __global__ void add_halo_v1(int *matrix, int size, int *pad_matrix) {
     // Copy elements from matrix to padded matrix
     pad_matrix[(i + 1) * (size + 2) + (j + 1)] = matrix[i * size + j];
 
-    //  Prevent kernel for assigning the padding multiple times
-    if (j == 0) {
-      // Top padding
-      pad_matrix[i + 1] = matrix[(size - 1) * size + i];
-      // Right padding
-      pad_matrix[(i + 1) * (size + 2) + (i + 1)] = matrix[i * size];
-      // Bottom padding
-      pad_matrix[(size + 1) * (size + 2) + (i + 1)] = matrix[i];
-      // Left padding
-      pad_matrix[(i + 1) * (size + 2)] = matrix[i * size + (size - 1)];
-    }
+    if (i == 0)
+      pad_matrix[(size + 2) * (size + 1) + (j + 1)] = matrix[size * i + j];
+    if (i == size - 1)
+      pad_matrix[j + 1] = matrix[size * i + j];
+    if (j == 0)
+      pad_matrix[(size + 2) * (i + 1) + (size + 1)] = matrix[size * i + j];
+    if (j == size - 1)
+      pad_matrix[(size + 2) * (i + 1)] = matrix[size * i + j];
   }
 }
 
