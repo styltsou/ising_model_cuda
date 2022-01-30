@@ -40,7 +40,7 @@ __device__ int calculate_moment_v2(int *matrix, int size, int i, int j) {
 //       }
 //     }
 //   }
-}
+//}
 
 __global__ void add_halo_v2(int *matrix, int size, int tile_width,
                             int *pad_matrix) {
