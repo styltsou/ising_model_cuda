@@ -56,7 +56,7 @@ __global__ void add_halo_v2(int *matrix, int size, int tile_width,
         pad_matrix[(i + 1) * (size + 2) + (j + 1)] = matrix[i * size + j];
 
         if (i == 0)
-          pad_matrix[(size + 2) * (size + 1) + (j + 1)] = matrix[n * i + j];
+          pad_matrix[(size + 2) * (size + 1) + (j + 1)] = matrix[size * i + j];
         if (i == size - 1)
           pad_matrix[j + 1] = matrix[size * i + j];
         if (j == 0)
