@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "v0.h"
 #include "v1.h"
+#include "v2.h"
 
 int main(int argc, char **argv) {
   // Get model size n and number of iterations  from argv
@@ -37,7 +38,7 @@ int main(int argc, char **argv) {
   }
 
   if (compare_matrices(out_matrix_v1, out_matrix_v2, model_size)) {
-    printf("V1 == V2"\n)
+    printf("V1 == V2"\n);
   } else {
     printf("V1 !== V2\n");
   }
