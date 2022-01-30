@@ -36,7 +36,7 @@ int *deepcopy_matrix(int *matrix, int size) {
   return cp_matrix;
 }
 
-int *add_halo_host(int *matrix, int size) {
+int *add_halo(int *matrix, int size) {
   int *pad_mat = (int *)calloc((size + 2) * (size + 2), sizeof(int));
 
   for (int i = 0; i < size; i++) {

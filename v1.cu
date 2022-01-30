@@ -48,7 +48,7 @@ __global__ void update_model_v1(int *pad_in_matrix, int *out_matrix, int size) {
 }
 
 int *ising_model_v1(int *in_matrix, int size, int num_iterations) {
-  int matrix_bytes = size * _size * sizeof(int);
+  int matrix_bytes = size * size * sizeof(int);
 
   // Allocate memory for output matrix
   int *out_matrix = (int *)malloc(matrix_bytes);

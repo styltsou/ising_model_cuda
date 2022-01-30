@@ -7,7 +7,7 @@
 
 void update_model_v0(int *in_matrix, int *out_matrix, int size) {
   // Add padding to input matrix
-  int *pad_in_matrix = add_halo_host(in_matrix, size);
+  int *pad_in_matrix = add_halo(in_matrix, size);
 
   // Don't calculate moments for padded matrix boundaries
   for (int i = 0; i < size; i++)

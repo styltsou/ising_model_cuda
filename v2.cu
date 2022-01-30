@@ -11,6 +11,7 @@ __device__ int calculate_moment_v2(int *matrix, int size, int i, int j) {
 
   return sign > 0 ? 1 : -1;
 }
+
 // Guess that's not the optimal implementation
 // Might use v1 instead
 __global__ void add_halo_v2(int *matrix, int size, int tile_width,

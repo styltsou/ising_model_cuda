@@ -22,27 +22,32 @@ int main(int argc, char **argv) {
 
   int *out_matrix_v0 = ising_model_v0(in_matrix_v0, model_size, num_iterations);
   int *out_matrix_v1 = ising_model_v1(in_matrix_v1, model_size, num_iterations);
-  // int *out_matrix_v2 = ising_model_v2(in_matrixs_v2, model_size,
-  // num_iterations);
+  int *out_matrix_v2 = ising_model_v2(in_matrix_v2, model_size, num_iterations);
 
   if (compare_matrices(out_matrix_v0, out_matrix_v1, model_size)) {
-    printf("\nV1 is correct\n");
+    printf("\nV0 == V1\n");
   } else {
-    printf("\nV1 has bugs\n");
+    printf("\nV0 !== V1\n");
   }
 
-  // if (compare_matrices(out_matrix_v0, out_matrix_v2, model_size)) {
-  // printf("V2 is correct\n");
-  //} else {
-  // printf("V2 has bugs\n");
-  //}
+  if (compare_matrices(out_matrix_v0, out_matrix_v2, model_size)) {
+    printf("V0 == V2\n");
+  } else {
+    printf("V0 !== V2\n");
+  }
+
+  if (compare_matrices(out_matrix_v1, out_matrix_v2, model_size)) {
+    printf("V1 == V2"\n)
+  } else {
+    printf("V1 !== V2\n");
+  }
 
   // Clean up
-  free(in_matrix_v0);
-  free(out_matrix_v0);
-  free(in_matrix_v1);
-  free(out_matrix_v1);
-  free(in_matrix_v2);
+  //free(in_matrix_v0);
+  //free(out_matrix_v0);
+  //free(in_matrix_v1);
+  //free(out_matrix_v1);
+  //free(in_matrix_v2);
   // free(out_matrix_v2);
 
   return 0;
