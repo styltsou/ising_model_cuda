@@ -4,13 +4,13 @@
 #include "utils.h"
 #include "v2.h"
 
-__device__ int calculate_moment_v2(int *matrix, int size, int i, int j) {
-  int sign = matrix[(i - 1) * size + j] + matrix[(i + 1) * size + j] +
-             matrix[i * size + j] + matrix[i * size + (j - 1)] +
-             matrix[i * size + (j + 1)];
+//__device__ int calculate_moment_v2(int *matrix, int size, int i, int j) {
+  //int sign = matrix[(i - 1) * size + j] + matrix[(i + 1) * size + j] +
+    //         matrix[i * size + j] + matrix[i * size + (j - 1)] +
+      //       matrix[i * size + (j + 1)];
 
-  return sign > 0 ? 1 : -1;
-}
+  //return sign > 0 ? 1 : -1;
+//}
 
 // Guess that's not the optimal implementation
 // Might use v1 instead

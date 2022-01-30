@@ -4,13 +4,13 @@
 #include "utils.h"
 #include "v1.h"
 
-__device__ int calculate_moment_v1(int *matrix, int size, int i, int j) {
-  int sign = matrix[(i - 1) * size + j] + matrix[(i + 1) * size + j] +
-             matrix[i * size + j] + matrix[i * size + (j - 1)] +
-             matrix[i * size + (j + 1)];
+//__device__ int calculate_moment_v1(int *matrix, int size, int i, int j) {
+//  int sign = matrix[(i - 1) * size + j] + matrix[(i + 1) * size + j] +
+      //       matrix[i * size + j] + matrix[i * size + (j - 1)] +
+    //         matrix[i * size + (j + 1)];
 
-  return sign > 0 ? 1 : -1;
-}
+  //return sign > 0 ? 1 : -1;
+//}
 
 // Kernel to add padding in a given matrix (for handling boundaries conditions)
 //__global__ void add_halo_v1(int *matrix, int size, int *pad_matrix) {

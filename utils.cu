@@ -57,7 +57,7 @@ int *add_halo(int *matrix, int size) {
   return pad_mat;
 }
 
-int calculate_moment(int *matrix, int size, int i, int j) {
+__host__ __device__ int calculate_moment(int *matrix, int size, int i, int j) {
   int sign = matrix[(i - 1) * size + j] + matrix[(i + 1) * size + j] +
              matrix[i * size + j] + matrix[i * size + (j - 1)] +
              matrix[i * size + (j + 1)];
