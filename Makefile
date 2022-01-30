@@ -1,6 +1,6 @@
 CC = nvcc
 
-DEPS = utils.cu v0.cu v1.cu main.cu
+DEPS = utils.cu v0.cu v1.cu v2.cu main.cu
 TEST_DEPS = utils.cu test.cu
 
 all: main test
