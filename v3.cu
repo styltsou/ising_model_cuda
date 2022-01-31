@@ -56,28 +56,23 @@ __global__ void update_model_v3(int *pad_in_matrix, int *out_matrix, int size,
   int col_start = blockIdx.x * tile_width;
   int col_end = col_start + tile_width;
 
-  // find a way to map global to local indexes
-  if (blockIdx.y == 0 && blockIdx.x == 2) {
-    // Fill the shared memory here
-    for (int i = 0; i < tile_width + 2; i++) {
-      for (int j = 0; j < tile_width + 2; j++) {
-        if (row_start + i < size + 2 && col_start + j < size + 2) {
-          // shared_mem[i * (tile_width + 2) + j] =
-          //     pad_in_matrix[(row_start + i) * (size + 2) + (col_start + j)];
-          printf("Pad matrix [%d] [%d] = %d \n", row_start + i, col_start + j,
-                 pad_in_matrix[(row_start + i) * (size + 2) + (col_start + j)]);
-        }
+  // Fill the shared memory here
+  for (int i = 0; i < tile_width + 2; i++) {
+    for (int j = 0; j < tile_width + 2; j++) {
+      if (row_start + i < size + 2 && col_start + j < size + 2) {
+        shared_mem[i * (tile_width + 2) + j] =
+            pad_in_matrix[(row_start + i) * (size + 2) + (col_start + j)];
       }
     }
   }
 
   // Calculate moments using data from shared memory
   // FInd the correct indexes in the function call
-  // for (int i = row_start; i < row_end; i++)
-  //   for (int j = col_start; j < col_end; j++)
-  //     if (i < size && j < size)
-  //       out_matrix[i * size + j] =
-  //           calculate_moment_v2(shared_mem, tile_width + 2, i + 1, j + 1);
+  for (int i = row_start; i < row_end; i++)
+    for (int j = col_start; j < col_end; j++)
+      if (i < size && j < size)
+        out_matrix[i * size + j] = calculate_moment_v2(
+            shared_mem, tile_width + 2, i + 1 - row_start, j + 1 - col_start);
 }
 
 // A thread calculates a tile of moments
@@ -92,8 +87,6 @@ int *ising_model_v3(int *in_matrix, int size, int tile_width,
   int *in_matrix_d;
   int *pad_in_matrix_d;
   int *out_matrix_d;
-
-  int *pad_in_matrix = (int *)malloc(pad_matrix_bytes);
 
   cudaMalloc((void **)&in_matrix_d, matrix_bytes);
   cudaMalloc((void **)&pad_in_matrix_d, pad_matrix_bytes);
@@ -114,11 +107,6 @@ int *ising_model_v3(int *in_matrix, int size, int tile_width,
   while (k < num_iterations) {
     add_halo_v3<<<grid_dim, block_dim>>>(in_matrix_d, size, tile_width,
                                          pad_in_matrix_d);
-
-    cudaMemcpy(pad_in_matrix, pad_in_matrix_d, pad_matrix_bytes,
-               cudaMemcpyDeviceToHost);
-    printf("Padded matrix\n");
-    print_model_state(pad_in_matrix, size + 2);
 
     update_model_v3<<<grid_dim, block_dim, shared_mem_bytes>>>(
         pad_in_matrix_d, out_matrix_d, size, tile_width);
