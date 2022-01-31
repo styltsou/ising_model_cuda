@@ -3,12 +3,14 @@
 #include "utils.h"
 #include "v3.h"
 
-// __device__ void print_model(int *matrix, int size) {
-//   for (int i = 0; i < size; i++) {
-//     for (int j = 0; j < size; j++) printf("%2d ", matrix[i * size + j]);
-//     printf("\n");
-//   }
-// }
+__device__ void print_model(int *matrix, int size) {
+  for (int i = 0; i < size; i++) {
+    for (int j = 0; j < size; j++) printf("%2d ", matrix[i * size + j]);
+    printf("\n");
+  }
+
+  printf("\n");
+}
 
 __device__ int calculate_moment_v3(int *matrix, int size, int i, int j) {
   int sign = matrix[(i - 1) * size + j] + matrix[(i + 1) * size + j] +
@@ -106,6 +108,10 @@ int *ising_model_v3(int *in_matrix, int size, int tile_width,
   while (k < num_iterations) {
     add_halo_v3<<<grid_dim, block_dim>>>(in_matrix_d, size, tile_width,
                                          pad_in_matrix_d);
+
+    printf("Padded matrix/n");
+    print_model_state(pad_in_matrix_d, model_size + 2);
+    printf("\n");
 
     update_model_v3<<<grid_dim, block_dim, shared_mem_bytes>>>(
         pad_in_matrix_d, out_matrix_d, size, tile_width);
