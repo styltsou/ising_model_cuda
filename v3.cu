@@ -56,7 +56,7 @@ __global__ void update_model_v3(int *pad_in_matrix, int *out_matrix, int size,
   int col_end = col_start + tile_width;
 
   // find a way to map global to local indexes
-  if (blockIdx.y == 0 && blockIdx.x == 0) {
+  if (blockIdx.y == 0 && blockIdx.x == 2) {
     // Fill the shared memory here
     for (int i = 0; i < tile_width + 2; i++) {
       for (int j = 0; j < tile_width + 2; j++) {
