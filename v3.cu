@@ -75,7 +75,7 @@ __global__ void update_model_v3(int *pad_in_matrix, int *out_matrix, int size,
   //       out_matrix[i * size + j] =
   //           calculate_moment_v2(shared_mem, tile_width + 2, i + 1, j + 1);
 
-  if (blockIdx.y == 0 && blockIdx.y == 0)
+  if (blockIdx.y == 0 && blockIdx.x == 0)
     print_model(shared_mem, tile_width + 2);
 }
 
@@ -110,9 +110,6 @@ int *ising_model_v3(int *in_matrix, int size, int tile_width,
   while (k < num_iterations) {
     add_halo_v3<<<grid_dim, block_dim>>>(in_matrix_d, size, tile_width,
                                          pad_in_matrix_d);
-
-    printf("Padded matrix\n");
-    printf("\n");
 
     update_model_v3<<<grid_dim, block_dim, shared_mem_bytes>>>(
         pad_in_matrix_d, out_matrix_d, size, tile_width);
