@@ -85,7 +85,7 @@ int *ising_model_v3(int *in_matrix, int size, int tile_width,
   // Allocate memory for device copies
   int matrix_bytes = size * size * sizeof(int);
   int pad_matrix_bytes = (size + 2) * (size + 2) * sizeof(int);
-  j int *in_matrix_d;
+  int *in_matrix_d;
   int *pad_in_matrix_d;
   int *out_matrix_d;
 
@@ -110,7 +110,7 @@ int *ising_model_v3(int *in_matrix, int size, int tile_width,
                                          pad_in_matrix_d);
 
     printf("Padded matrix/n");
-    print_model_state(pad_in_matrix_d, model_size + 2);
+    print_model_state(pad_in_matrix_d, size + 2);
     printf("\n");
 
     update_model_v3<<<grid_dim, block_dim, shared_mem_bytes>>>(
