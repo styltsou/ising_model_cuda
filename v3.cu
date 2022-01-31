@@ -63,7 +63,8 @@ __global__ void update_model_v3(int *pad_in_matrix, int *out_matrix, int size,
         if (row_start + i < size + 2 && col_start + j < size + 2) {
           // shared_mem[i * (tile_width + 2) + j] =
           //     pad_in_matrix[(row_start + i) * (size + 2) + (col_start + j)];
-          printf("Pad matrix [%d] [%d]\n", row_start + i, col_start + j);
+          printf("Pad matrix [%d] [%d] = %d \n", row_start + i, col_start + j,
+                 pad_in_matrix[(row_start + i) * (size + 2) + (col_start + j)]);
         }
       }
     }
