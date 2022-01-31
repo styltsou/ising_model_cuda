@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
   int *out_matrix_v0 = ising_model_v0(in_matrix_v0, model_size, num_iterations);
   int *out_matrix_v1 = ising_model_v1(in_matrix_v1, model_size, num_iterations);
   int *out_matrix_v2 =
-      ising_model_v2(in_matrix_v2, model_size, 4, num_iterations);
+      ising_model_v2(in_matrix_v2, model_size, 2, num_iterations);
 
   int *out_matrix_v3 =
       ising_model_v3(in_matrix_v3, model_size, 2, num_iterations);

@@ -87,6 +87,7 @@ int *ising_model_v3(int *in_matrix, int size, int tile_width,
   // Allocate memory for device copies
   int matrix_bytes = size * size * sizeof(int);
   int pad_matrix_bytes = (size + 2) * (size + 2) * sizeof(int);
+
   int *in_matrix_d;
   int *pad_in_matrix_d;
   int *out_matrix_d;
