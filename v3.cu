@@ -56,13 +56,15 @@ __global__ void update_model_v3(int *pad_in_matrix, int *out_matrix, int size,
   int col_end = col_start + tile_width;
 
   // find a way to map global to local indexes
-
-  // Fill the shared memory here
-  for (int i = 0; i < tile_width + 2; i++) {
-    for (int j = 0; j < tile_width + 2; j++) {
-      if (row_start + i < size + 2 && col_start + j < size + 2) {
-        shared_mem[i * (tile_width + 2) + j] =
-            pad_in_matrix[(row_start + i) * (size + 2) + (col_start + j)];
+  if (blockIdx.y == 0 && blockIdx.x == 0) {
+    // Fill the shared memory here
+    for (int i = 0; i < tile_width + 2; i++) {
+      for (int j = 0; j < tile_width + 2; j++) {
+        if (row_start + i < size + 2 && col_start + j < size + 2) {
+          // shared_mem[i * (tile_width + 2) + j] =
+          //     pad_in_matrix[(row_start + i) * (size + 2) + (col_start + j)];
+          printf("Pad matrix [%d] [%d]\n", row_start + i, col_start + j);
+        }
       }
     }
   }
@@ -74,15 +76,6 @@ __global__ void update_model_v3(int *pad_in_matrix, int *out_matrix, int size,
   //     if (i < size && j < size)
   //       out_matrix[i * size + j] =
   //           calculate_moment_v2(shared_mem, tile_width + 2, i + 1, j + 1);
-
-  if (blockIdx.y == 0 && blockIdx.x == 0) {
-    for (int i = 0; i < tile_width + 2; i++) {
-      for (int j = 0; j < tile_width + 2; j++) {
-        printf("%2d ", shared_mem[i * (tile_width + 2) + j]);
-      }
-      printf("\n");
-    }
-  }
 }
 
 // A thread calculates a tile of moments
