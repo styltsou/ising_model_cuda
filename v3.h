@@ -8,7 +8,7 @@ __global__ void add_halo_v3(int *in_matrix, int size, int tile_width,
 
 __global__ void update_model_v3(int *pad_in_matrix, int *out_matrix, int size);
 
-int *ising_model_v2(int *in_matrix, int size, int tile_width,
+int *ising_model_v3(int *in_matrix, int size, int tile_width,
                     int num_iterations);
 
 #endif
