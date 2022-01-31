@@ -4,13 +4,13 @@
 #include "utils.h"
 #include "v2.h"
 
-//__device__ int calculate_moment_v2(int *matrix, int size, int i, int j) {
-  //int sign = matrix[(i - 1) * size + j] + matrix[(i + 1) * size + j] +
-    //         matrix[i * size + j] + matrix[i * size + (j - 1)] +
-      //       matrix[i * size + (j + 1)];
+__device__ int calculate_moment_v2(int *matrix, int size, int i, int j) {
+  int sign = matrix[(i - 1) * size + j] + matrix[(i + 1) * size + j] +
+             matrix[i * size + j] + matrix[i * size + (j - 1)] +
+             matrix[i * size + (j + 1)];
 
-  //return sign > 0 ? 1 : -1;
-//}
+  return sign > 0 ? 1 : -1;
+}
 
 // Guess that's not the optimal implementation
 // Might use v1 instead
@@ -57,8 +57,7 @@ __global__ void add_halo_v2(int *matrix, int size, int tile_width,
 
         if (i == 0)
           pad_matrix[(size + 2) * (size + 1) + (j + 1)] = matrix[size * i + j];
-        if (i == size - 1)
-          pad_matrix[j + 1] = matrix[size * i + j];
+        if (i == size - 1) pad_matrix[j + 1] = matrix[size * i + j];
         if (j == 0)
           pad_matrix[(size + 2) * (i + 1) + (size + 1)] = matrix[size * i + j];
         if (j == size - 1)
@@ -79,7 +78,7 @@ __global__ void update_model_v2(int *pad_in_matrix, int *out_matrix, int size,
     for (int j = col_start; j < col_end; j++)
       if (i < size && j < size)
         out_matrix[i * size + j] =
-            calculate_moment(pad_in_matrix, size + 2, i + 1, j + 1);
+            calculate_moment_v2(pad_in_matrix, size + 2, i + 1, j + 1);
 }
 
 // A thread calculates a tile of moments

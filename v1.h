@@ -1,7 +1,7 @@
 #ifndef V1_H
 #define V1_H
 
-//__device__ int calculate_moment_v1(int *matrix, int size, int i, int j);
+__device__ int calculate_moment_v1(int *matrix, int size, int i, int j);
 
 __global__ void add_halo_v1(int *matrix, int size, int *pad_matrix);
 

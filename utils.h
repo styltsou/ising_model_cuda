@@ -11,7 +11,7 @@ int *deepcopy_matrix(int *matrix, int size);
 
 int *add_halo(int *matrix, int size);
 
-__host__ __device__ int calculate_moment(int *matrix, int size, int i, int j);
+int calculate_moment(int *matrix, int size, int i, int j);
 
 void swap_matrices(int **A, int **B);
 
