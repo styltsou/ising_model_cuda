@@ -91,6 +91,8 @@ int *ising_model_v3(int *in_matrix, int size, int tile_width,
   int *pad_in_matrix_d;
   int *out_matrix_d;
 
+  int pad_in_matrix = (int *)malloc(pad_matrix_bytes);
+
   cudaMalloc((void **)&in_matrix_d, matrix_bytes);
   cudaMalloc((void **)&pad_in_matrix_d, pad_matrix_bytes);
   cudaMalloc((void **)&out_matrix_d, matrix_bytes);
@@ -110,6 +112,11 @@ int *ising_model_v3(int *in_matrix, int size, int tile_width,
   while (k < num_iterations) {
     add_halo_v3<<<grid_dim, block_dim>>>(in_matrix_d, size, tile_width,
                                          pad_in_matrix_d);
+
+    cudaMemcpy(pad_in_matrix, pad_in_matrix_d, pad_matrix_bytes,
+               cudaMemcpyDeviceToHost);
+    printf("Padded matrix\n");
+    print_model_state(pad_in_matrix, model_size + 2);
 
     update_model_v3<<<grid_dim, block_dim, shared_mem_bytes>>>(
         pad_in_matrix_d, out_matrix_d, size, tile_width);
