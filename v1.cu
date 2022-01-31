@@ -62,7 +62,7 @@ __global__ void update_model_v1(int *pad_in_matrix, int *out_matrix, int size) {
   // Check for index out of bounds
   if (i < size && j < size) {
     out_matrix[i * size + j] =
-        calculate_moment_v1(pad_in_matrix, size + 2, i + 1, j + 1);
+        calculate_moment(pad_in_matrix, size + 2, i + 1, j + 1);
   }
 }
 

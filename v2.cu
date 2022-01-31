@@ -79,7 +79,7 @@ __global__ void update_model_v2(int *pad_in_matrix, int *out_matrix, int size,
     for (int j = col_start; j < col_end; j++)
       if (i < size && j < size)
         out_matrix[i * size + j] =
-            calculate_moment_v2(pad_in_matrix, size + 2, i + 1, j + 1);
+            calculate_moment(pad_in_matrix, size + 2, i + 1, j + 1);
 }
 
 // A thread calculates a tile of moments
