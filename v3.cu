@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include "utils.h"
-// #include "v2.h"
 #include "v3.h"
 
 __device__ void print_model(int *matrix, int size) {
@@ -10,7 +9,6 @@ __device__ void print_model(int *matrix, int size) {
     for (int j = 0; j < size; j++) printf("%2d ", matrix[i * size + j]);
     printf("\n");
   }
-
   printf("\n");
 }
 
@@ -71,7 +69,7 @@ __global__ void update_model_v3(int *pad_in_matrix, int *out_matrix, int size,
   for (int i = row_start; i < row_end; i++)
     for (int j = col_start; j < col_end; j++)
       if (i < size && j < size)
-        out_matrix[i * size + j] = calculate_moment_v2(
+        out_matrix[i * size + j] = calculate_moment_v3(
             shared_mem, tile_width + 2, i + 1 - row_start, j + 1 - col_start);
 }
 
