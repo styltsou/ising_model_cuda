@@ -69,9 +69,9 @@ __global__ void add_halo_v2(int *matrix, int size, int tile_width,
 
 __global__ void update_model_v2(int *pad_in_matrix, int *out_matrix, int size,
                                 int tile_width) {
-  int row_start = (blockIdx.y * blockDim.y + threadIdx.y) * tile_width;
+  int row_start = blockIdx.y * tile_width;
   int row_end = row_start + tile_width;
-  int col_start = (blockIdx.x * blockDim.x + threadIdx.x) * tile_width;
+  int col_start = blockIdx.x * tile_width;
   int col_end = col_start + tile_width;
 
   for (int i = row_start; i < row_end; i++)
