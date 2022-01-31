@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
   int *in_matrix_v0 = init_ising_model(model_size);
   int *in_matrix_v1 = deepcopy_matrix(in_matrix_v0, model_size);
   int *in_matrix_v2 = deepcopy_matrix(in_matrix_v0, model_size);
-  int *in_matrix_v3 = deepcopy_matrix(in_matrix_v3, model_size);
+  int *in_matrix_v3 = deepcopy_matrix(in_matrix_v0, model_size);
 
   print_model_state(in_matrix_v0, model_size);
   printf("\n");

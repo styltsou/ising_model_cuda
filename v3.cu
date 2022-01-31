@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #include "utils.h"
-#include "v2.h"
+// #include "v2.h"
 #include "v3.h"
 
 __device__ void print_model(int *matrix, int size) {
@@ -22,32 +22,30 @@ __device__ int calculate_moment_v3(int *matrix, int size, int i, int j) {
   return sign > 0 ? 1 : -1;
 }
 
-// __global__ void add_halo_v3(int *matrix, int size, int tile_width,
-//                             int *pad_matrix) {
-//   int row_start = blockIdx.y * tile_width;
-//   int row_end = row_start + tile_width;
-//   int col_start = blockIdx.x * tile_width;
-//   int col_end = col_start + tile_width;
+__global__ void add_halo_v3(int *matrix, int size, int tile_width,
+                            int *pad_matrix) {
+  int row_start = blockIdx.y * tile_width;
+  int row_end = row_start + tile_width;
+  int col_start = blockIdx.x * tile_width;
+  int col_end = col_start + tile_width;
 
-//   for (int i = row_start; i < row_end; i++) {
-//     for (int j = col_start; j < col_end; j++) {
-//       if (i < size && j < size) {
-//         // Copy elements from matrix to padded matrix
-//         pad_matrix[(i + 1) * (size + 2) + (j + 1)] = matrix[i * size + j];
+  for (int i = row_start; i < row_end; i++) {
+    for (int j = col_start; j < col_end; j++) {
+      if (i < size && j < size) {
+        // Copy elements from matrix to padded matrix
+        pad_matrix[(i + 1) * (size + 2) + (j + 1)] = matrix[i * size + j];
 
-//         if (i == 0)
-//           pad_matrix[(size + 2) * (size + 1) + (j + 1)] = matrix[size * i +
-//           j];
-//         if (i == size - 1) pad_matrix[j + 1] = matrix[size * i + j];
-//         if (j == 0)
-//           pad_matrix[(size + 2) * (i + 1) + (size + 1)] = matrix[size * i +
-//           j];
-//         if (j == size - 1)
-//           pad_matrix[(size + 2) * (i + 1)] = matrix[size * i + j];
-//       }
-//     }
-//   }
-// }
+        if (i == 0)
+          pad_matrix[(size + 2) * (size + 1) + (j + 1)] = matrix[size * i + j];
+        if (i == size - 1) pad_matrix[j + 1] = matrix[size * i + j];
+        if (j == 0)
+          pad_matrix[(size + 2) * (i + 1) + (size + 1)] = matrix[size * i + j];
+        if (j == size - 1)
+          pad_matrix[(size + 2) * (i + 1)] = matrix[size * i + j];
+      }
+    }
+  }
+}
 
 __global__ void update_model_v3(int *pad_in_matrix, int *out_matrix, int size,
                                 int tile_width) {
@@ -114,7 +112,7 @@ int *ising_model_v3(int *in_matrix, int size, int tile_width,
 
   int k = 0;
   while (k < num_iterations) {
-    add_halo_v2<<<grid_dim, block_dim>>>(in_matrix_d, size, tile_width,
+    add_halo_v3<<<grid_dim, block_dim>>>(in_matrix_d, size, tile_width,
                                          pad_in_matrix_d);
 
     cudaMemcpy(pad_in_matrix, pad_in_matrix_d, pad_matrix_bytes,
